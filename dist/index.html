@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Refactor or Die: The Sprint Survivor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script type="module" crossorigin src="/assets/index-BBlrAncB.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-Bi8tY2Hm.css">
+</head>
+<body>
+
+<div id="game-container">
+    <div id="phaser-overlay" role="application" aria-label="Game canvas"></div>
+
+    <!-- HUD -->
+    <div id="GAME" class="ui-layer hidden">
+        <div class="hud w-full">
+            <div class="flex flex-col gap-2 w-1/3">
+                <!-- HP -->
+                <div class="flex items-center gap-2">
+                    <span class="text-monokai-pink font-bold">HP</span>
+                    <div class="bar-container w-48">
+                        <div id="hp-bar" class="bar-fill bg-[color:var(--monokai-pink)]" style="width: 100%;"></div>
+                    </div>
+                    <span id="hp-text">100/100</span>
+                </div>
+                <!-- XP -->
+                <div class="flex items-center gap-2">
+                    <span class="text-monokai-yellow font-bold">XP</span>
+                    <div class="bar-container w-48">
+                        <div id="xp-bar" class="bar-fill bg-[color:var(--monokai-yellow)]" style="width: 0%;"></div>
+                    </div>
+                    <span id="lvl-text">Lvl 1</span>
+                </div>
+                <!-- Weapons HUD -->
+                <div class="flex gap-2 mt-2" id="weapon-slots-container">
+                    <div class="weapon-slot"></div>
+                    <div class="weapon-slot"></div>
+                    <div class="weapon-slot"></div>
+                    <div class="weapon-slot"></div>
+                </div>
+            </div>
+
+            <!-- Timer & Sprint Progress -->
+            <div class="flex flex-col items-center w-1/3 relative">
+                <div id="game-timer" class="text-2xl font-bold text-monokai-blue neon-text">00:00</div>
+                <div class="text-xs text-gray-400 mt-1">SPRINT TIMELINE</div>
+                <div class="bar-container w-64 border-monokai-green">
+                    <div id="sprint-bar" class="bar-fill bg-[color:var(--monokai-green)]" style="width: 0%;"></div>
+                    <!-- Mini boss markers (33% = 30s, 66% = 60s) -->
+                    <div class="absolute top-0 bottom-0 w-1 bg-black opacity-50" style="left: 33%"></div>
+                    <div class="absolute top-0 bottom-0 w-1 bg-black opacity-50" style="left: 66%"></div>
+                </div>
+                <div id="sprint-label" class="text-monokai-green text-sm font-bold mt-1">Sprint 1: MVP</div>
+            </div>
+
+            <!-- Stats -->
+            <div class="flex flex-col items-end w-1/3 gap-1">
+                <div class="text-monokai-orange font-bold text-xl flex items-center gap-2">
+                    <span>₿</span> <span id="btc-counter">0</span>
+                </div>
+                <div class="text-gray-400 text-sm" id="kill-counter">Bugs Fixed: 0</div>
+                <div class="text-monokai-blue text-sm font-bold" id="pr-counter">PRs Merged: 0</div>
+            </div>
+        </div>
+
+        <!-- BOSS HP BAR -->
+        <div id="boss-hud" class="absolute top-36 left-1/2 transform -translate-x-1/2 w-96 hidden flex flex-col items-center pointer-events-none">
+            <div class="text-center font-bold text-monokai-pink neon-text mb-1 tracking-widest" id="boss-name">BOSS</div>
+            <div class="bar-container border-monokai-pink h-6 w-full">
+                 <div id="boss-hp-bar" class="bar-fill bg-[color:var(--monokai-pink)]" style="width: 100%"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Restart Overlay -->
+    <div id="quick-restart-overlay" class="ui-layer flex flex-col items-center justify-center hidden pointer-events-none" style="z-index: 100;">
+        <div class="text-monokai-pink font-bold text-2xl mb-2 neon-text">RESTARTING...</div>
+        <div class="bar-container w-64 border-monokai-pink bg-black">
+            <div id="quick-restart-bar" class="bar-fill bg-[color:var(--monokai-pink)]" style="width: 0%;"></div>
+        </div>
+    </div>
+
+    <!-- Main Menu -->
+    <div id="MENU" class="ui-layer interactive menu-screen">
+        <h1 class="text-6xl font-bold text-monokai-green neon-text mb-2">REFACTOR OR DIE</h1>
+        <p class="text-xl text-monokai-gray mb-8"> // A Software Development Survivor Roguelite ALPHA v0.3.2</p>
+
+        <div class="flex gap-4 mb-4">
+            <!-- ADDED PULSE CLASS HERE -->
+            <button onclick="Game.showHeroSelect()" class="pixel-btn text-xl pulse-urgent">START GAME</button>
+            <button onclick="Game.showUpgrades()" class="pixel-btn secondary text-xl">META UPGRADES (Shop)</button>
+        </div>
+        <button onclick="Game.ui.showOptions()" class="pixel-btn">OPTIONS</button>
+
+        <div class="mt-4 text-monokai-orange font-bold text-2xl">Wallet: ₿ <span id="menu-btc">0</span></div>
+    </div>
+
+    <!-- Options Menu -->
+    <div id="options-menu" class="ui-layer interactive menu-screen hidden" style="background: rgba(20, 20, 20, 0.98);">
+        <h2 class="text-4xl text-monokai-blue mb-8">AUDIO OPTIONS</h2>
+
+        <div class="w-96 flex flex-col gap-6">
+            <!-- Music Controls -->
+            <div class="bg-[#111] p-4 border border-gray-700">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-monokai-purple font-bold">MUSIC</span>
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" id="opt-music-mute" class="form-checkbox bg-gray-800 border-gray-600 text-purple-600">
+                        <span class="text-sm text-gray-400">MUTE</span>
+                    </label>
+                </div>
+                <input type="range" id="opt-music-vol" min="0" max="1" step="0.1" class="w-full accent-purple-500">
+            </div>
+
+            <!-- SFX Controls -->
+            <div class="bg-[#111] p-4 border border-gray-700">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-monokai-green font-bold">SFX</span>
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" id="opt-sfx-mute" class="form-checkbox bg-gray-800 border-gray-600 text-green-600">
+                        <span class="text-sm text-gray-400">MUTE</span>
+                    </label>
+                </div>
+                <input type="range" id="opt-sfx-vol" min="0" max="1" step="0.1" class="w-full accent-green-500">
+            </div>
+        </div>
+
+        <button onclick="Game.ui.hideOptions()" class="pixel-btn mt-8">BACK</button>
+    </div>
+
+    <!-- Hero Selection -->
+    <div id="HERO_SELECT" class="ui-layer interactive menu-screen hidden">
+        <h2 class="text-4xl text-monokai-blue mb-6">SELECT DEVELOPER</h2>
+        <div id="hero-grid" class="flex gap-4 justify-center flex-wrap max-w-6xl">
+            <!-- Populated by JS -->
+        </div>
+        <button onclick="Game.showMainMenu()" class="pixel-btn danger mt-8">BACK</button>
+    </div>
+
+    <!-- Meta Upgrades -->
+    <div id="UPGRADES" class="ui-layer interactive menu-screen hidden">
+        <h2 class="text-4xl text-monokai-purple mb-2">CAREER UPGRADES</h2>
+        <p class="mb-6 text-monokai-gray">Invest your BTC to improve permanent stats.</p>
+        <div class="flex gap-8 mb-4">
+             <div class="text-monokai-orange font-bold text-2xl">Wallet: ₿ <span id="shop-btc">0</span></div>
+        </div>
+        <div id="upgrade-grid" class="grid grid-cols-3 gap-4 max-w-4xl overflow-y-auto max-h-[60vh] p-4">
+            <!-- Populated by JS -->
+        </div>
+        <button onclick="Game.showMainMenu()" class="pixel-btn danger mt-8">BACK</button>
+    </div>
+
+    <!-- Level Up / Reward Screen -->
+    <div id="REWARD" class="ui-layer interactive menu-screen hidden" style="background: rgba(0,0,0,0.95);">
+        <h2 id="reward-title" class="text-4xl text-monokai-yellow mb-2">LEVEL UP!</h2>
+        <p class="text-gray-400 mb-8" id="reward-subtitle">Choose an upgrade for the next iteration</p>
+        <div id="reward-cards" class="flex gap-6 justify-center flex-wrap max-w-6xl">
+            <!-- Cards go here -->
+        </div>
+        <div class="text-xs text-gray-500 mt-8" id="reward-queue-msg"></div>
+    </div>
+
+    <!-- Pause Screen -->
+    <div id="PAUSE" class="ui-layer interactive menu-screen hidden">
+        <h2 class="text-5xl text-white mb-8">PAUSED</h2>
+
+        <div class="grid grid-cols-2 gap-8 text-left bg-[#1e1f1a] p-8 border border-gray-600 mb-8 max-w-4xl">
+            <div>
+                <h3 class="text-monokai-green border-b border-gray-600 mb-2">Developer Stats</h3>
+                <div id="pause-stats" class="text-sm space-y-1"></div>
+            </div>
+            <div>
+                <h3 class="text-monokai-pink border-b border-gray-600 mb-2">Tech Stack</h3>
+                <div id="pause-items" class="text-sm space-y-1 mb-4"></div>
+                <h3 class="text-monokai-blue border-b border-gray-600 mb-2">Inventory</h3>
+                <div id="pause-inventory" class="text-sm space-y-1 grid grid-cols-2 gap-1"></div>
+            </div>
+        </div>
+
+        <div class="flex flex-col gap-4 w-64 mt-4">
+            <button onclick="Game.togglePause()" class="pixel-btn">RESUME</button>
+            <button onclick="Game.ui.showOptions()" class="pixel-btn secondary">OPTIONS</button>
+            <button id="restart-btn" onmousedown="Game.startRestartTimer()" onmouseup="Game.cancelRestartTimer()" onmouseleave="Game.cancelRestartTimer()" class="pixel-btn secondary relative overflow-hidden">
+                <span class="relative z-10">HOLD TO RESTART</span>
+                <div id="restart-fill" class="absolute top-0 left-0 h-full bg-[color:var(--monokai-blue)] opacity-30 w-0 transition-none"></div>
+            </button>
+            <button onclick="Game.exitToMenu()" class="pixel-btn danger">EXIT TO MENU</button>
+        </div>
+    </div>
+
+    <!-- Game Over -->
+    <div id="OVER" class="ui-layer interactive menu-screen hidden">
+        <h2 class="text-6xl text-monokai-pink neon-text mb-4">BUILD FAILED</h2>
+        <div class="text-2xl mb-8">You survived <span id="go-time" class="text-monokai-green">00:00</span></div>
+        <div class="text-xl mb-8">Earned: ₿ <span id="go-btc" class="text-monokai-orange">0</span></div>
+        <button onclick="Game.exitToMenu()" class="pixel-btn">RETURN TO MENU</button>
+    </div>
+
+</div>
+
+</body>
+</html>
