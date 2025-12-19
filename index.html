@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Refactor or Die: The Sprint Survivor</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <script type="module" crossorigin src="/assets/index-BBlrAncB.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/index-Bi8tY2Hm.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script type="module" crossorigin src="/assets/index-hMvZyuO4.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-eD-tErYt.css">
 </head>
 <body>
 
@@ -90,45 +90,102 @@
 
         <div class="flex gap-4 mb-4">
             <!-- ADDED PULSE CLASS HERE -->
-            <button onclick="Game.showHeroSelect()" class="pixel-btn text-xl pulse-urgent">START GAME</button>
-            <button onclick="Game.showUpgrades()" class="pixel-btn secondary text-xl">META UPGRADES (Shop)</button>
+            <button data-game-action="show-hero-select" class="pixel-btn text-xl pulse-urgent">START GAME</button>
+            <button data-game-action="show-upgrades" class="pixel-btn secondary text-xl">META UPGRADES (Shop)</button>
         </div>
-        <button onclick="Game.ui.showOptions()" class="pixel-btn">OPTIONS</button>
+        <button data-game-action="show-options" class="pixel-btn">OPTIONS</button>
 
         <div class="mt-4 text-monokai-orange font-bold text-2xl">Wallet: ₿ <span id="menu-btc">0</span></div>
+
+        <div class="mt-6 w-full max-w-2xl bg-[#111] border border-gray-700 p-4 text-left">
+            <div class="flex items-center justify-between mb-2">
+                <h3 class="text-monokai-blue font-bold text-lg">LEADERBOARD</h3>
+                <span class="text-xs text-gray-500">Top runs (local)</span>
+            </div>
+            <div id="leaderboard-list" class="space-y-2"></div>
+            <div id="leaderboard-empty" class="text-gray-500 text-sm">Complete a sprint to add your first score.</div>
+        </div>
     </div>
 
     <!-- Options Menu -->
     <div id="options-menu" class="ui-layer interactive menu-screen hidden" style="background: rgba(20, 20, 20, 0.98);">
-        <h2 class="text-4xl text-monokai-blue mb-8">AUDIO OPTIONS</h2>
+        <h2 class="text-4xl text-monokai-blue mb-8">OPTIONS</h2>
 
-        <div class="w-96 flex flex-col gap-6">
+        <div class="w-full max-w-3xl flex flex-col gap-6">
             <!-- Music Controls -->
-            <div class="bg-[#111] p-4 border border-gray-700">
-                <div class="flex justify-between items-center mb-2">
-                    <span class="text-monokai-purple font-bold">MUSIC</span>
-                    <label class="flex items-center gap-2 cursor-pointer">
-                        <input type="checkbox" id="opt-music-mute" class="form-checkbox bg-gray-800 border-gray-600 text-purple-600">
-                        <span class="text-sm text-gray-400">MUTE</span>
-                    </label>
+            <div id="options-audio" class="flex flex-col gap-6">
+                <div class="bg-[#111] p-4 border border-gray-700">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-monokai-purple font-bold">MUSIC</span>
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" id="opt-music-mute" class="form-checkbox bg-gray-800 border-gray-600 text-purple-600">
+                            <span class="text-sm text-gray-400">MUTE</span>
+                        </label>
+                    </div>
+                    <input type="range" id="opt-music-vol" min="0" max="1" step="0.1" class="w-full accent-purple-500">
                 </div>
-                <input type="range" id="opt-music-vol" min="0" max="1" step="0.1" class="w-full accent-purple-500">
+
+                <div class="bg-[#111] p-4 border border-gray-700">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-monokai-green font-bold">SFX</span>
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" id="opt-sfx-mute" class="form-checkbox bg-gray-800 border-gray-600 text-green-600">
+                            <span class="text-sm text-gray-400">MUTE</span>
+                        </label>
+                    </div>
+                    <input type="range" id="opt-sfx-vol" min="0" max="1" step="0.1" class="w-full accent-green-500">
+                </div>
+
+                <button data-game-action="show-controls" class="pixel-btn secondary">CONTROLS</button>
             </div>
 
-            <!-- SFX Controls -->
-            <div class="bg-[#111] p-4 border border-gray-700">
-                <div class="flex justify-between items-center mb-2">
-                    <span class="text-monokai-green font-bold">SFX</span>
-                    <label class="flex items-center gap-2 cursor-pointer">
-                        <input type="checkbox" id="opt-sfx-mute" class="form-checkbox bg-gray-800 border-gray-600 text-green-600">
-                        <span class="text-sm text-gray-400">MUTE</span>
-                    </label>
+            <div id="controls-menu" class="bg-[#111] p-4 border border-gray-700 hidden">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="text-monokai-yellow font-bold">CONTROLS</span>
+                    <span class="text-xs text-gray-500">Click a binding, then press a key or button</span>
                 </div>
-                <input type="range" id="opt-sfx-vol" min="0" max="1" step="0.1" class="w-full accent-green-500">
+                <div class="grid grid-cols-[1fr_auto_auto] gap-3 items-center text-sm">
+                    <span class="text-gray-400 font-bold">Action</span>
+                    <span class="text-gray-400 font-bold text-right">Keyboard</span>
+                    <span class="text-gray-400 font-bold text-right">Controller</span>
+
+                    <span data-control-label="UP"></span>
+                    <button class="pixel-btn secondary text-xs px-2 py-1" data-control-type="keyboard" data-control-action="UP"></button>
+                    <button class="pixel-btn secondary text-xs px-2 py-1" data-control-type="gamepad" data-control-action="UP"></button>
+
+                    <span data-control-label="DOWN"></span>
+                    <button class="pixel-btn secondary text-xs px-2 py-1" data-control-type="keyboard" data-control-action="DOWN"></button>
+                    <button class="pixel-btn secondary text-xs px-2 py-1" data-control-type="gamepad" data-control-action="DOWN"></button>
+
+                    <span data-control-label="LEFT"></span>
+                    <button class="pixel-btn secondary text-xs px-2 py-1" data-control-type="keyboard" data-control-action="LEFT"></button>
+                    <button class="pixel-btn secondary text-xs px-2 py-1" data-control-type="gamepad" data-control-action="LEFT"></button>
+
+                    <span data-control-label="RIGHT"></span>
+                    <button class="pixel-btn secondary text-xs px-2 py-1" data-control-type="keyboard" data-control-action="RIGHT"></button>
+                    <button class="pixel-btn secondary text-xs px-2 py-1" data-control-type="gamepad" data-control-action="RIGHT"></button>
+
+                    <span data-control-label="PAUSE"></span>
+                    <button class="pixel-btn secondary text-xs px-2 py-1" data-control-type="keyboard" data-control-action="PAUSE"></button>
+                    <button class="pixel-btn secondary text-xs px-2 py-1" data-control-type="gamepad" data-control-action="PAUSE"></button>
+
+                    <span data-control-label="CANCEL"></span>
+                    <button class="pixel-btn secondary text-xs px-2 py-1" data-control-type="keyboard" data-control-action="CANCEL"></button>
+                    <button class="pixel-btn secondary text-xs px-2 py-1" data-control-type="gamepad" data-control-action="CANCEL"></button>
+
+                    <span data-control-label="RESTART"></span>
+                    <button class="pixel-btn secondary text-xs px-2 py-1" data-control-type="keyboard" data-control-action="RESTART"></button>
+                    <button class="pixel-btn secondary text-xs px-2 py-1" data-control-type="gamepad" data-control-action="RESTART"></button>
+
+                    <span data-control-label="CONFIRM"></span>
+                    <button class="pixel-btn secondary text-xs px-2 py-1" data-control-type="keyboard" data-control-action="CONFIRM"></button>
+                    <button class="pixel-btn secondary text-xs px-2 py-1" data-control-type="gamepad" data-control-action="CONFIRM"></button>
+                </div>
+                <button data-game-action="hide-controls" class="pixel-btn mt-6">BACK</button>
             </div>
         </div>
 
-        <button onclick="Game.ui.hideOptions()" class="pixel-btn mt-8">BACK</button>
+        <button data-game-action="hide-options" class="pixel-btn mt-8">BACK</button>
     </div>
 
     <!-- Hero Selection -->
@@ -137,7 +194,7 @@
         <div id="hero-grid" class="flex gap-4 justify-center flex-wrap max-w-6xl">
             <!-- Populated by JS -->
         </div>
-        <button onclick="Game.showMainMenu()" class="pixel-btn danger mt-8">BACK</button>
+        <button data-game-action="show-main-menu" class="pixel-btn danger mt-8">BACK</button>
     </div>
 
     <!-- Meta Upgrades -->
@@ -150,7 +207,7 @@
         <div id="upgrade-grid" class="grid grid-cols-3 gap-4 max-w-4xl overflow-y-auto max-h-[60vh] p-4">
             <!-- Populated by JS -->
         </div>
-        <button onclick="Game.showMainMenu()" class="pixel-btn danger mt-8">BACK</button>
+        <button data-game-action="show-main-menu" class="pixel-btn danger mt-8">BACK</button>
     </div>
 
     <!-- Level Up / Reward Screen -->
@@ -181,13 +238,13 @@
         </div>
 
         <div class="flex flex-col gap-4 w-64 mt-4">
-            <button onclick="Game.togglePause()" class="pixel-btn">RESUME</button>
-            <button onclick="Game.ui.showOptions()" class="pixel-btn secondary">OPTIONS</button>
-            <button id="restart-btn" onmousedown="Game.startRestartTimer()" onmouseup="Game.cancelRestartTimer()" onmouseleave="Game.cancelRestartTimer()" class="pixel-btn secondary relative overflow-hidden">
+            <button data-game-action="toggle-pause" class="pixel-btn">RESUME</button>
+            <button data-game-action="show-options" class="pixel-btn secondary">OPTIONS</button>
+            <button id="restart-btn" class="pixel-btn secondary relative overflow-hidden">
                 <span class="relative z-10">HOLD TO RESTART</span>
                 <div id="restart-fill" class="absolute top-0 left-0 h-full bg-[color:var(--monokai-blue)] opacity-30 w-0 transition-none"></div>
             </button>
-            <button onclick="Game.exitToMenu()" class="pixel-btn danger">EXIT TO MENU</button>
+            <button data-game-action="exit-to-menu" class="pixel-btn danger">EXIT TO MENU</button>
         </div>
     </div>
 
@@ -196,10 +253,10 @@
         <h2 class="text-6xl text-monokai-pink neon-text mb-4">BUILD FAILED</h2>
         <div class="text-2xl mb-8">You survived <span id="go-time" class="text-monokai-green">00:00</span></div>
         <div class="text-xl mb-8">Earned: ₿ <span id="go-btc" class="text-monokai-orange">0</span></div>
-        <button onclick="Game.exitToMenu()" class="pixel-btn">RETURN TO MENU</button>
+        <button data-game-action="exit-to-menu" class="pixel-btn">RETURN TO MENU</button>
     </div>
 
 </div>
-
+
 </body>
 </html>
