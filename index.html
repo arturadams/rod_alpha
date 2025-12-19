@@ -5,10 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Refactor or Die: The Sprint Survivor</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-  <script type="module" crossorigin src="./assets/index-hMvZyuO4.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/index-eD-tErYt.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script type="module" crossorigin src="/assets/index-BIzgjgTy.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-7QOzOiYA.css">
 </head>
 <body>
 
@@ -114,79 +113,82 @@
 
         <div class="w-full max-w-3xl flex flex-col gap-6">
             <!-- Music Controls -->
-            <div id="options-audio" class="flex flex-col gap-6">
-                <div class="bg-[#111] p-4 border border-gray-700">
-                    <div class="flex justify-between items-center mb-2">
-                        <span class="text-monokai-purple font-bold">MUSIC</span>
-                        <label class="flex items-center gap-2 cursor-pointer">
-                            <input type="checkbox" id="opt-music-mute" class="form-checkbox bg-gray-800 border-gray-600 text-purple-600">
-                            <span class="text-sm text-gray-400">MUTE</span>
-                        </label>
-                    </div>
-                    <input type="range" id="opt-music-vol" min="0" max="1" step="0.1" class="w-full accent-purple-500">
+            <div class="bg-[#111] p-4 border border-gray-700">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-monokai-purple font-bold">MUSIC</span>
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" id="opt-music-mute" class="form-checkbox bg-gray-800 border-gray-600 text-purple-600">
+                        <span class="text-sm text-gray-400">MUTE</span>
+                    </label>
                 </div>
-
-                <div class="bg-[#111] p-4 border border-gray-700">
-                    <div class="flex justify-between items-center mb-2">
-                        <span class="text-monokai-green font-bold">SFX</span>
-                        <label class="flex items-center gap-2 cursor-pointer">
-                            <input type="checkbox" id="opt-sfx-mute" class="form-checkbox bg-gray-800 border-gray-600 text-green-600">
-                            <span class="text-sm text-gray-400">MUTE</span>
-                        </label>
-                    </div>
-                    <input type="range" id="opt-sfx-vol" min="0" max="1" step="0.1" class="w-full accent-green-500">
-                </div>
-
-                <button data-game-action="show-controls" class="pixel-btn secondary">CONTROLS</button>
+                <input type="range" id="opt-music-vol" min="0" max="1" step="0.1" class="w-full accent-purple-500">
             </div>
 
-            <div id="controls-menu" class="bg-[#111] p-4 border border-gray-700 hidden">
-                <div class="flex items-center justify-between mb-3">
-                    <span class="text-monokai-yellow font-bold">CONTROLS</span>
-                    <span class="text-xs text-gray-500">Click a binding, then press a key or button</span>
+            <!-- SFX Controls -->
+            <div class="bg-[#111] p-4 border border-gray-700">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-monokai-green font-bold">SFX</span>
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" id="opt-sfx-mute" class="form-checkbox bg-gray-800 border-gray-600 text-green-600">
+                        <span class="text-sm text-gray-400">MUTE</span>
+                    </label>
                 </div>
-                <div class="grid grid-cols-[1fr_auto_auto] gap-3 items-center text-sm">
-                    <span class="text-gray-400 font-bold">Action</span>
-                    <span class="text-gray-400 font-bold text-right">Keyboard</span>
-                    <span class="text-gray-400 font-bold text-right">Controller</span>
-
-                    <span data-control-label="UP"></span>
-                    <button class="pixel-btn secondary text-xs px-2 py-1" data-control-type="keyboard" data-control-action="UP"></button>
-                    <button class="pixel-btn secondary text-xs px-2 py-1" data-control-type="gamepad" data-control-action="UP"></button>
-
-                    <span data-control-label="DOWN"></span>
-                    <button class="pixel-btn secondary text-xs px-2 py-1" data-control-type="keyboard" data-control-action="DOWN"></button>
-                    <button class="pixel-btn secondary text-xs px-2 py-1" data-control-type="gamepad" data-control-action="DOWN"></button>
-
-                    <span data-control-label="LEFT"></span>
-                    <button class="pixel-btn secondary text-xs px-2 py-1" data-control-type="keyboard" data-control-action="LEFT"></button>
-                    <button class="pixel-btn secondary text-xs px-2 py-1" data-control-type="gamepad" data-control-action="LEFT"></button>
-
-                    <span data-control-label="RIGHT"></span>
-                    <button class="pixel-btn secondary text-xs px-2 py-1" data-control-type="keyboard" data-control-action="RIGHT"></button>
-                    <button class="pixel-btn secondary text-xs px-2 py-1" data-control-type="gamepad" data-control-action="RIGHT"></button>
-
-                    <span data-control-label="PAUSE"></span>
-                    <button class="pixel-btn secondary text-xs px-2 py-1" data-control-type="keyboard" data-control-action="PAUSE"></button>
-                    <button class="pixel-btn secondary text-xs px-2 py-1" data-control-type="gamepad" data-control-action="PAUSE"></button>
-
-                    <span data-control-label="CANCEL"></span>
-                    <button class="pixel-btn secondary text-xs px-2 py-1" data-control-type="keyboard" data-control-action="CANCEL"></button>
-                    <button class="pixel-btn secondary text-xs px-2 py-1" data-control-type="gamepad" data-control-action="CANCEL"></button>
-
-                    <span data-control-label="RESTART"></span>
-                    <button class="pixel-btn secondary text-xs px-2 py-1" data-control-type="keyboard" data-control-action="RESTART"></button>
-                    <button class="pixel-btn secondary text-xs px-2 py-1" data-control-type="gamepad" data-control-action="RESTART"></button>
-
-                    <span data-control-label="CONFIRM"></span>
-                    <button class="pixel-btn secondary text-xs px-2 py-1" data-control-type="keyboard" data-control-action="CONFIRM"></button>
-                    <button class="pixel-btn secondary text-xs px-2 py-1" data-control-type="gamepad" data-control-action="CONFIRM"></button>
-                </div>
-                <button data-game-action="hide-controls" class="pixel-btn mt-6">BACK</button>
+                <input type="range" id="opt-sfx-vol" min="0" max="1" step="0.1" class="w-full accent-green-500">
             </div>
+
+            <button data-game-action="show-controls" class="pixel-btn secondary">CONTROLS</button>
         </div>
 
         <button data-game-action="hide-options" class="pixel-btn mt-8">BACK</button>
+    </div>
+
+    <!-- Controls Menu -->
+    <div id="controls-menu" class="ui-layer interactive menu-screen hidden" style="background: rgba(20, 20, 20, 0.98);">
+        <h2 class="text-4xl text-monokai-yellow mb-8">CONTROLS</h2>
+        <div class="w-full max-w-3xl bg-[#111] p-4 border border-gray-700">
+            <div class="flex items-center justify-between mb-3">
+                <span class="text-xs text-gray-500">Click a binding, then press a key or button</span>
+            </div>
+            <div class="grid grid-cols-[1fr_auto_auto] gap-3 items-center text-sm">
+                <span class="text-gray-400 font-bold">Action</span>
+                <span class="text-gray-400 font-bold text-right">Keyboard</span>
+                <span class="text-gray-400 font-bold text-right">Controller</span>
+
+                <span data-control-label="UP"></span>
+                <button class="pixel-btn secondary text-xs px-2 py-1" data-control-type="keyboard" data-control-action="UP"></button>
+                <button class="pixel-btn secondary text-xs px-2 py-1" data-control-type="gamepad" data-control-action="UP"></button>
+
+                <span data-control-label="DOWN"></span>
+                <button class="pixel-btn secondary text-xs px-2 py-1" data-control-type="keyboard" data-control-action="DOWN"></button>
+                <button class="pixel-btn secondary text-xs px-2 py-1" data-control-type="gamepad" data-control-action="DOWN"></button>
+
+                <span data-control-label="LEFT"></span>
+                <button class="pixel-btn secondary text-xs px-2 py-1" data-control-type="keyboard" data-control-action="LEFT"></button>
+                <button class="pixel-btn secondary text-xs px-2 py-1" data-control-type="gamepad" data-control-action="LEFT"></button>
+
+                <span data-control-label="RIGHT"></span>
+                <button class="pixel-btn secondary text-xs px-2 py-1" data-control-type="keyboard" data-control-action="RIGHT"></button>
+                <button class="pixel-btn secondary text-xs px-2 py-1" data-control-type="gamepad" data-control-action="RIGHT"></button>
+
+                <span data-control-label="PAUSE"></span>
+                <button class="pixel-btn secondary text-xs px-2 py-1" data-control-type="keyboard" data-control-action="PAUSE"></button>
+                <button class="pixel-btn secondary text-xs px-2 py-1" data-control-type="gamepad" data-control-action="PAUSE"></button>
+
+                <span data-control-label="CANCEL"></span>
+                <button class="pixel-btn secondary text-xs px-2 py-1" data-control-type="keyboard" data-control-action="CANCEL"></button>
+                <button class="pixel-btn secondary text-xs px-2 py-1" data-control-type="gamepad" data-control-action="CANCEL"></button>
+
+                <span data-control-label="RESTART"></span>
+                <button class="pixel-btn secondary text-xs px-2 py-1" data-control-type="keyboard" data-control-action="RESTART"></button>
+                <button class="pixel-btn secondary text-xs px-2 py-1" data-control-type="gamepad" data-control-action="RESTART"></button>
+
+                <span data-control-label="CONFIRM"></span>
+                <button class="pixel-btn secondary text-xs px-2 py-1" data-control-type="keyboard" data-control-action="CONFIRM"></button>
+                <button class="pixel-btn secondary text-xs px-2 py-1" data-control-type="gamepad" data-control-action="CONFIRM"></button>
+            </div>
+        </div>
+
+        <button data-game-action="hide-controls" class="pixel-btn mt-8">BACK</button>
     </div>
 
     <!-- Hero Selection -->
@@ -259,6 +261,9 @@
 
 </div>
 
-
+<div id="touch-joystick" class="touch-joystick">
+    <div id="touch-joystick-thumb" class="touch-joystick-thumb"></div>
+</div>
+
 </body>
 </html>
